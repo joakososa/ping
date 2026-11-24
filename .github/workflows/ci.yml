@@ -1,9 +1,9 @@
 name: CI
 
+# Runs on every push to any branch, so a branch is known to be green before its PR is opened.
 on:
-  pull_request:
   push:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
