@@ -3,7 +3,7 @@
 Spec: `docs/specs/pwa.md` (PWA). No automated tests in the repo yet: Claude checks the app with a headless Chrome
 against a local server that fakes the Access login; Joaquin checks the device-only items once after the first deploy.
 
-## Claude's browser check (last run: 2026-11-24, on branch `feat/pwa`)
+## Claude's browser check (last run: 2026-11-24, after the English rename, on branch `feat/pwa`)
 
 | Requirement | What was done | Result |
 | --- | --- | --- |

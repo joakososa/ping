@@ -3,46 +3,47 @@
 // - own changes show at once (optimistic) and are sent with the version they read (409 = changed elsewhere);
 // - new notes created offline wait in a local queue and are sent when the connection returns;
 // - an expired Access session is detected and the user is sent through the login again.
+// Identifiers are in English; text shown to the user is in Spanish (ADR-0010).
 
 const $ = (selector) => document.querySelector(selector);
-const lista = $("#lista");
-const tplNota = $("#tpl-nota");
-const form = $("#nueva");
-const entrada = $("#nueva-texto");
+const list = $("#list");
+const noteTemplate = $("#note-template");
+const form = $("#new-note");
+const input = $("#new-note-text");
 
-const CLAVE_CACHE = "ping.notas";
-const CLAVE_PENDIENTES = "ping.pendientes";
+const CACHE_KEY = "ping.notes";
+const PENDING_KEY = "ping.pending";
 
-let notas = [];
-let editando = null; // id of the note being edited
-let cargando = false;
+let notes = [];
+let editingId = null;
+let loading = false;
 
 // ---------- local storage (best effort: it can be unavailable or cleared) ----------
 
-function leer(clave, porDefecto) {
+function readLocal(key, fallback) {
   try {
-    const valor = localStorage.getItem(clave);
-    return valor ? JSON.parse(valor) : porDefecto;
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
   } catch {
-    return porDefecto;
+    return fallback;
   }
 }
 
-function guardar(clave, valor) {
+function writeLocal(key, value) {
   try {
-    localStorage.setItem(clave, JSON.stringify(valor));
+    localStorage.setItem(key, JSON.stringify(value));
   } catch {
     /* ignore */
   }
 }
 
-const pendientes = () => leer(CLAVE_PENDIENTES, []);
-const guardarPendientes = (valor) => guardar(CLAVE_PENDIENTES, valor);
+const pending = () => readLocal(PENDING_KEY, []);
+const savePending = (value) => writeLocal(PENDING_KEY, value);
 
 // ---------- API ----------
 
-class SesionVencida extends Error {}
-class SinConexion extends Error {}
+class SessionExpired extends Error {}
+class Offline extends Error {}
 
 async function api(method, path, body) {
   let res;
@@ -55,210 +56,213 @@ async function api(method, path, body) {
       redirect: "manual", // Access answers an expired session with a redirect to its login page
     });
   } catch {
-    throw new SinConexion();
+    throw new Offline();
   }
-  if (res.type === "opaqueredirect" || res.status === 401 || res.status === 403) throw new SesionVencida();
+  if (res.type === "opaqueredirect" || res.status === 401 || res.status === 403) throw new SessionExpired();
   const data = res.status === 204 ? null : await res.json().catch(() => null);
   return { status: res.status, data };
 }
 
 // ---------- notices ----------
 
-function avisar(texto, accion) {
-  $("#aviso-texto").textContent = texto;
-  const boton = $("#aviso-accion");
-  boton.hidden = !accion;
-  if (accion) {
-    boton.textContent = accion.texto;
-    boton.onclick = accion.hacer;
+function showNotice(text, action) {
+  $("#notice-text").textContent = text;
+  const button = $("#notice-action");
+  button.hidden = !action;
+  if (action) {
+    button.textContent = action.label;
+    button.onclick = action.run;
   }
-  $("#aviso").hidden = false;
+  $("#notice").hidden = false;
 }
 
-const limpiarAviso = () => ($("#aviso").hidden = true);
+const clearNotice = () => ($("#notice").hidden = true);
 
-function manejarError(error) {
-  if (error instanceof SesionVencida) {
-    avisar("Tu sesión venció.", { texto: "Entrar de nuevo", hacer: () => location.reload() });
-  } else if (error instanceof SinConexion) {
-    avisar("Sin conexión. Lo nuevo se guarda acá y se envía cuando vuelva la señal.");
+function handleError(error) {
+  if (error instanceof SessionExpired) {
+    showNotice("Tu sesión venció.", { label: "Entrar de nuevo", run: () => location.reload() });
+  } else if (error instanceof Offline) {
+    showNotice("Sin conexión. Lo nuevo se guarda acá y se envía cuando vuelva la señal.");
   } else {
-    avisar("Algo salió mal. Probá de nuevo.");
+    showNotice("Algo salió mal. Probá de nuevo.");
     console.error(error);
   }
 }
 
 // ---------- rendering ----------
 
-const formatoFecha = new Intl.DateTimeFormat("es-AR", { dateStyle: "short", timeStyle: "short" });
+const dateFormat = new Intl.DateTimeFormat("es-AR", { dateStyle: "short", timeStyle: "short" });
 
-function pintar() {
-  const enCola = pendientes().map((p) => ({ ...p, pendiente: true }));
-  const ids = new Set(notas.map((n) => n.id));
-  const todas = [...enCola.filter((p) => !ids.has(p.id)), ...notas];
+function render() {
+  const queued = pending().map((p) => ({ ...p, pending: true }));
+  const known = new Set(notes.map((n) => n.id));
+  const all = [...queued.filter((p) => !known.has(p.id)), ...notes];
 
-  lista.replaceChildren(...todas.map(pintarNota));
-  $("#vacio").hidden = todas.length > 0;
+  list.replaceChildren(...all.map(renderNote));
+  $("#empty").hidden = all.length > 0;
 }
 
-function pintarNota(nota) {
-  const li = tplNota.content.firstElementChild.cloneNode(true);
-  li.dataset.id = nota.id;
-  const texto = li.querySelector(".texto");
-  li.querySelector(".fecha").textContent = nota.creado ? formatoFecha.format(new Date(nota.creado)) : "";
+function renderNote(note) {
+  const li = noteTemplate.content.firstElementChild.cloneNode(true);
+  li.dataset.id = note.id;
+  const text = li.querySelector(".text");
+  li.querySelector(".date").textContent = note.createdAt ? dateFormat.format(new Date(note.createdAt)) : "";
 
-  if (nota.pendiente) {
-    li.classList.add("pendiente");
-    texto.textContent = nota.texto;
-    li.querySelector(".estado").textContent = "Pendiente de envío";
-    li.querySelector(".acciones").remove();
+  if (note.pending) {
+    li.classList.add("pending");
+    text.textContent = note.text;
+    li.querySelector(".status").textContent = "Pendiente de envío";
+    li.querySelector(".actions").remove();
     return li;
   }
 
-  if (editando === nota.id) {
+  if (editingId === note.id) {
     const area = document.createElement("textarea");
-    area.value = nota.texto;
+    area.value = note.text;
     area.maxLength = 2000;
     area.rows = 3;
-    texto.replaceWith(area);
-    const acciones = li.querySelector(".acciones");
-    acciones.replaceChildren(boton("Guardar", () => guardarEdicion(nota, area.value)), boton("Cancelar", () => {
-      editando = null;
-      pintar();
-    }));
+    area.setAttribute("aria-label", "Editar nota");
+    text.replaceWith(area);
+    li.querySelector(".actions").replaceChildren(
+      button("Guardar", () => saveEdit(note, area.value)),
+      button("Cancelar", () => {
+        editingId = null;
+        render();
+      }),
+    );
     queueMicrotask(() => area.focus());
     return li;
   }
 
-  texto.textContent = nota.texto;
-  li.querySelector(".editar").onclick = () => {
-    editando = nota.id;
-    pintar();
+  text.textContent = note.text;
+  li.querySelector(".edit").onclick = () => {
+    editingId = note.id;
+    render();
   };
-  const borrar = li.querySelector(".borrar");
-  borrar.onclick = () => {
+  const del = li.querySelector(".delete");
+  del.onclick = () => {
     // Two-step delete instead of a confirm() dialog.
-    if (borrar.dataset.armado) return borrarNota(nota);
-    borrar.dataset.armado = "1";
-    borrar.textContent = "¿Seguro?";
+    if (del.dataset.armed) return deleteNote(note);
+    del.dataset.armed = "1";
+    del.textContent = "¿Seguro?";
     setTimeout(() => {
-      delete borrar.dataset.armado;
-      borrar.textContent = "Borrar";
+      delete del.dataset.armed;
+      del.textContent = "Borrar";
     }, 3000);
   };
   return li;
 }
 
-function boton(texto, onclick) {
+function button(label, onclick) {
   const b = document.createElement("button");
   b.type = "button";
-  b.textContent = texto;
+  b.textContent = label;
   b.onclick = onclick;
   return b;
 }
 
 // ---------- actions ----------
 
-async function cargar() {
-  if (cargando) return;
-  cargando = true;
+async function load() {
+  if (loading) return;
+  loading = true;
   try {
-    await enviarPendientes();
-    const [yo, lista] = await Promise.all([api("GET", "/api/me"), api("GET", "/api/notas")]);
-    if (yo.status === 200) $("#quien").textContent = yo.data.email;
-    if (lista.status === 200) {
-      notas = lista.data;
-      guardar(CLAVE_CACHE, notas);
-      limpiarAviso();
+    await sendPending();
+    const [me, fetched] = await Promise.all([api("GET", "/api/me"), api("GET", "/api/notes")]);
+    if (me.status === 200) $("#who").textContent = me.data.email;
+    if (fetched.status === 200) {
+      notes = fetched.data;
+      writeLocal(CACHE_KEY, notes);
+      clearNotice();
     }
   } catch (error) {
-    manejarError(error);
+    handleError(error);
   } finally {
-    cargando = false;
-    if (editando === null) pintar();
+    loading = false;
+    if (editingId === null) render();
   }
 }
 
-async function enviarPendientes() {
-  for (const p of pendientes()) {
-    const { status, data } = await api("POST", "/api/notas", { id: p.id, texto: p.texto });
+async function sendPending() {
+  for (const p of pending()) {
+    const { status, data } = await api("POST", "/api/notes", { id: p.id, text: p.text });
     if (status === 201 || status === 200) {
-      notas = [data, ...notas.filter((n) => n.id !== data.id)];
+      notes = [data, ...notes.filter((n) => n.id !== data.id)];
     } else if (status >= 400 && status < 500) {
-      avisar(`No se pudo guardar una nota pendiente: ${data?.error ?? status}`);
+      showNotice(`No se pudo guardar una nota pendiente: ${data?.error ?? status}`);
     } else {
       return; // server problem: keep it queued
     }
-    guardarPendientes(pendientes().filter((x) => x.id !== p.id));
+    savePending(pending().filter((x) => x.id !== p.id));
   }
 }
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const texto = entrada.value.trim();
-  if (!texto) return;
-  entrada.value = "";
-  guardarPendientes([{ id: crypto.randomUUID(), texto, creado: new Date().toISOString() }, ...pendientes()]);
-  pintar();
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  savePending([{ id: crypto.randomUUID(), text, createdAt: new Date().toISOString() }, ...pending()]);
+  render();
   try {
-    await enviarPendientes();
-    limpiarAviso();
+    await sendPending();
+    clearNotice();
   } catch (error) {
-    manejarError(error);
+    handleError(error);
   }
-  pintar();
+  render();
 });
 
-entrada.addEventListener("keydown", (event) => {
+input.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) form.requestSubmit();
 });
 
-async function guardarEdicion(nota, nuevoTexto) {
-  const texto = nuevoTexto.trim();
-  if (!texto || texto === nota.texto) {
-    editando = null;
-    return pintar();
+async function saveEdit(note, newText) {
+  const text = newText.trim();
+  if (!text || text === note.text) {
+    editingId = null;
+    return render();
   }
-  await cambiar(nota, { texto, version: nota.version });
+  await change(note, { text, version: note.version });
 }
 
-async function borrarNota(nota) {
-  await cambiar(nota, { borrar: true, version: nota.version });
+async function deleteNote(note) {
+  await change(note, { delete: true, version: note.version });
 }
 
-async function cambiar(nota, cambio) {
+async function change(note, patch) {
   try {
-    const { status, data } = await api("PATCH", `/api/notas/${nota.id}`, cambio);
+    const { status, data } = await api("PATCH", `/api/notes/${note.id}`, patch);
     if (status === 200) {
-      notas = data.borradoEn ? notas.filter((n) => n.id !== nota.id) : notas.map((n) => (n.id === nota.id ? data : n));
-      limpiarAviso();
+      notes = data.deletedAt ? notes.filter((n) => n.id !== note.id) : notes.map((n) => (n.id === note.id ? data : n));
+      clearNotice();
     } else if (status === 409) {
-      notas = notas.map((n) => (n.id === nota.id ? data.actual : n));
-      avisar("Esta nota cambió mientras la tenías abierta. Te muestro la versión actual.");
+      notes = notes.map((n) => (n.id === note.id ? data.current : n));
+      showNotice("Esta nota cambió mientras la tenías abierta. Te muestro la versión actual.");
     } else if (status === 404) {
-      notas = notas.filter((n) => n.id !== nota.id);
-      avisar("Esa nota ya no existe.");
+      notes = notes.filter((n) => n.id !== note.id);
+      showNotice("Esa nota ya no existe.");
     } else {
-      avisar(`No se pudo guardar: ${data?.error ?? status}`);
+      showNotice(`No se pudo guardar: ${data?.error ?? status}`);
     }
-    guardar(CLAVE_CACHE, notas);
+    writeLocal(CACHE_KEY, notes);
   } catch (error) {
-    manejarError(error);
+    handleError(error);
   }
-  editando = null;
-  pintar();
+  editingId = null;
+  render();
 }
 
 // ---------- startup ----------
 
-notas = leer(CLAVE_CACHE, []);
-pintar();
-cargar();
+notes = readLocal(CACHE_KEY, []);
+render();
+load();
 
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") cargar();
+  if (document.visibilityState === "visible") load();
 });
-window.addEventListener("online", cargar);
+window.addEventListener("online", load);
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js").catch((error) => console.warn("Service worker:", error));

@@ -12,35 +12,35 @@
     <script type="module" src="/app.js"></script>
   </head>
   <body>
-    <header class="barra">
+    <header class="topbar">
       <h1>Ping</h1>
-      <span id="quien" class="quien"></span>
+      <span id="who" class="who"></span>
     </header>
 
-    <div id="aviso" class="aviso" hidden>
-      <span id="aviso-texto"></span>
-      <button id="aviso-accion" type="button" hidden></button>
+    <div id="notice" class="notice" role="status" hidden>
+      <span id="notice-text"></span>
+      <button id="notice-action" type="button" hidden></button>
     </div>
 
     <main>
-      <form id="nueva" class="nueva" autocomplete="off">
-        <textarea id="nueva-texto" rows="2" maxlength="2000" placeholder="Escribí una nota…" required></textarea>
+      <form id="new-note" class="new-note" autocomplete="off">
+        <textarea id="new-note-text" rows="2" maxlength="2000" placeholder="Escribí una nota…" aria-label="Nueva nota" required></textarea>
         <button type="submit">Anotar</button>
       </form>
 
-      <p id="vacio" class="vacio" hidden>Todavía no hay notas.</p>
-      <ul id="lista" class="lista"></ul>
+      <p id="empty" class="empty" hidden>Todavía no hay notas.</p>
+      <ul id="list" class="list"></ul>
     </main>
 
-    <template id="tpl-nota">
-      <li class="nota">
-        <p class="texto"></p>
+    <template id="note-template">
+      <li class="note">
+        <p class="text"></p>
         <div class="meta">
-          <span class="fecha"></span>
-          <span class="estado"></span>
-          <span class="acciones">
-            <button type="button" class="editar">Editar</button>
-            <button type="button" class="borrar">Borrar</button>
+          <span class="date"></span>
+          <span class="status"></span>
+          <span class="actions">
+            <button type="button" class="edit">Editar</button>
+            <button type="button" class="delete">Borrar</button>
           </span>
         </div>
       </li>
