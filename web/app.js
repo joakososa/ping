@@ -164,7 +164,7 @@ async function cargar() {
   cargando = true;
   try {
     await enviarPendientes();
-    const [yo, lista] = await Promise.all([api("GET", "/api/yo"), api("GET", "/api/notas")]);
+    const [yo, lista] = await Promise.all([api("GET", "/api/me"), api("GET", "/api/notas")]);
     if (yo.status === 200) $("#quien").textContent = yo.data.email;
     if (lista.status === 200) {
       notas = lista.data;
