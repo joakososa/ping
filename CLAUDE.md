@@ -13,10 +13,12 @@ Cross-system plan and context: Joaquin's context folder `2026 - Migraciones` (`A
   Joaquin reviews and merges. Merging to `main` deploys (Workers Builds).
 - **Small, reviewable PRs:** one concern per PR. If a change grows past what can be reviewed in one sitting, split
   it (stacked PRs are fine: each PR says which one it builds on).
+- **Green before the PR:** CI runs on every push to any branch. Claude pushes the branch, waits until CI is green,
+  and only then opens the PR, so Joaquin is only notified of PRs that already pass. No draft PRs.
 
 **Specs → tests → code**
 1. The behavior is agreed in the chat with Joaquin.
-2. Claude writes or updates the **spec** in `docs/specs/` (numbered requirements, e.g. `NOT-07`: an update with a
+2. Claude writes or updates the **spec** in `docs/specs/` (numbered requirements, e.g. `NOTE-07`: an update with a
    stale version is refused with 409). Joaquin approves.
 3. Claude writes the **tests first**, one or more per requirement, with the requirement id in the test name.
    They must fail for the right reason.
@@ -45,7 +47,7 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 ## Tests
 | Archivo | Test | Qué prueba |
 | --- | --- | --- |
-| test/x.test.ts | NOT-07 refuses a stale version… | <what it proves, in plain words> |
+| test/x.test.ts | NOTE-07 refuses a stale version… | <what it proves, in plain words> |
 
 ## En qué enfocarse
 <where review attention matters most: risky logic, security, decisions taken while coding>
@@ -82,18 +84,19 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 | [0003](docs/decisions/0003-stack.md) | Proposed | Cloudflare Workers + D1, TypeScript, Hono, Vitest in the Workers runtime; plain HTML/JS PWA |
 | [0004](docs/decisions/0004-access-gate-and-jwt-recheck.md) | Proposed | Cloudflare Access gates every system; the Worker re-verifies the JWT, checks one allowed email and fails closed |
 | [0005](docs/decisions/0005-optimistic-concurrency-with-version.md) | Proposed | Writes carry the integer `version` they read; stale writes get 409, never overwrite |
-| [0006](docs/decisions/0006-soft-delete-and-audit-log.md) | Proposed | No hard deletes; every write is audited in `cambios` in the same transaction |
+| [0006](docs/decisions/0006-soft-delete-and-audit-log.md) | Proposed | No hard deletes; every write is audited in `audit_log` in the same transaction |
 | [0007](docs/decisions/0007-idempotent-create-with-client-ids.md) | Proposed | Clients generate UUIDs, so offline retries never duplicate |
 | [0008](docs/decisions/0008-deploy-with-workers-builds.md) | Proposed | Deploy on merge with Workers Builds; no Cloudflare token in GitHub; workers.dev and previews off |
 | [0009](docs/decisions/0009-pwa-refresh-on-focus.md) | Proposed | PWA refreshes on open/focus (not live); cached shell; offline queue for creations |
+| [0010](docs/decisions/0010-english-names.md) | Proposed | Code, API, database and docs in English; only the UI text is in Spanish |
 
 ## 4. Plan
 
 | # | PR | Status |
 | --- | --- | --- |
-| 1 | `docs/fundamentos`: this file, ADRs 0001–0009, specs, API contract, DB schema | Open |
+| 1 | `docs/fundamentos`: this file, ADRs 0001–0010, specs, API contract, DB schema | Open |
 | 2 | `feat/acceso`: tooling + CI + Access gate spec (`ACC-*`) + `/api/me` | Open (on top of 1) |
-| 3 | `feat/notas`: migration, audit log, notes API and audit specs (`NOT-*`, `AUD-*`) | Open (on top of 2) |
+| 3 | `feat/notas`: migration, audit log, notes API and audit spec (`NOTE-*`, `AUD-*`) | Open (on top of 2) |
 | 4 | `feat/pwa`: installable PWA, PWA spec (`PWA-*`) | Open (on top of 3) |
 | 5 | Setup in Cloudflare (Joaquin, steps in README) + first deploy + checklist | After 1–4 merge and joakososa.dev moves |
 | 6 | `feat/mcp`: MCP connector with OAuth through Access | Spec + ADR first |

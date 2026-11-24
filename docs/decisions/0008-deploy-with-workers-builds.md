@@ -12,7 +12,8 @@ Joaquin's personal site already deploys with Workers Builds.
 - **Workers Builds** (Cloudflare connected to the GitHub repo) deploys on every push to `main`: build command
   `npm run check`, deploy command `npm run deploy` (apply D1 migrations, then `wrangler deploy`).
 - `main` only changes through PRs that Joaquin merges; branch protection rules are his.
-- GitHub Actions runs CI (typecheck + tests) on PRs without any secret.
+- GitHub Actions runs CI (typecheck + tests) on **every push to any branch**, without any secret. Claude opens a PR
+  only after its branch is green, so a PR never arrives red.
 - `workers_dev: false` and `preview_urls: false` in `wrangler.jsonc`: the only public entry is the custom domain
   behind Access (see ADR-0004, Cloudflare Access as the gate, JWT re-checked in the Worker).
 

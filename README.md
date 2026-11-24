@@ -18,7 +18,7 @@ browser / Android PWA ──▶ Cloudflare Access (only Joaquin) ──▶ Worke
 | Path | What |
 | --- | --- |
 | `src/core/` | **Template code**, copied as-is into every system: Access JWT verification, audit log |
-| `src/notas.ts` | Data access for this system (shared by the API and, later, the MCP tools) |
+| `src/notes.ts` | Data access for this system (shared by the API and, later, the MCP tools) |
 | `src/app.ts` | Hono app: `/api/*` routes, `no-store`, Access middleware, static fallback |
 | `src/index.ts` | Worker entry |
 | `web/` | PWA: `index.html`, `app.js`, `styles.css`, `manifest.webmanifest`, `sw.js`, `icons/` |
@@ -56,14 +56,14 @@ That is on purpose (fail closed). The tests cover the API with locally signed to
 6. **Checklist after the first deploy:**
    - [ ] `https://ping.joakososa.dev` asks for the Access login, then opens.
    - [ ] Workers & Pages → ping → Settings → Domains & Routes: **workers.dev and Preview URLs disabled**.
-   - [ ] `curl -i https://ping.joakososa.dev/api/notas` without logging in does not return notes.
+   - [ ] `curl -i https://ping.joakososa.dev/api/notes` without logging in does not return notes.
    - [ ] Install on Android (Chrome menu → Add to home screen / Install app) and add a note.
-   - [ ] A row appears in `cambios` for every write (D1 console: `SELECT * FROM cambios ORDER BY id DESC`).
+   - [ ] A row appears in `audit_log` for every write (D1 console: `SELECT * FROM audit_log ORDER BY id DESC`).
 
 ## Creating a new system from this template
 1. GitHub → *Use this template* → new private repo (e.g. `libreta`).
 2. Rename `ping` in `wrangler.jsonc`, `package.json`, `web/manifest.webmanifest`, `web/index.html`, the service
    worker cache name, and the route.
-3. Keep `src/core/` and ADRs 0001–0009 (continue the numbering); replace `src/notas.ts`, the routes in `src/app.ts`,
+3. Keep `src/core/` and ADRs 0001–0009 (continue the numbering); replace `src/notes.ts`, the routes in `src/app.ts`,
    the migrations, the specs and the PWA.
 4. Repeat "Setup" for the new database, Access application and Worker.

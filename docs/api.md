@@ -1,19 +1,20 @@
 # API contract
 
 Base: `https://ping.joakososa.dev/api`. Behind Cloudflare Access; every request needs the Access session (the
-browser sends it automatically; Access adds `Cf-Access-Jwt-Assertion`). JSON in and out.
-All responses: `Cache-Control: no-store`. Errors: `{ "error": string }` (plus `actual` on 409).
+browser sends it automatically; Access adds `Cf-Access-Jwt-Assertion`). JSON in and out. Names are in English
+(ADR-0010, English for code, API and database; Spanish for the UI).
+All responses: `Cache-Control: no-store`. Errors: `{ "error": string }` (plus `current` on 409).
 
 ## Types
 
 ```ts
-type Nota = {
-  id: string;            // UUID
-  texto: string;         // 1..2000 chars, trimmed
-  creado: string;        // ISO 8601 UTC
-  actualizado: string;   // ISO 8601 UTC
-  version: number;       // starts at 1, +1 on every update
-  borradoEn: string | null;
+type Note = {
+  id: string;               // UUID
+  text: string;             // 1..2000 chars, trimmed
+  createdAt: string;        // ISO 8601 UTC
+  updatedAt: string;        // ISO 8601 UTC
+  version: number;          // starts at 1, +1 on every update
+  deletedAt: string | null; // set when soft-deleted
 };
 ```
 
@@ -22,19 +23,19 @@ type Nota = {
 ### `GET /api/me`
 → `200 { "email": string }`
 
-### `GET /api/notas`
-→ `200 Nota[]` visible notes, newest first.
+### `GET /api/notes`
+→ `200 Note[]` visible notes, newest first.
 
-### `POST /api/notas`
-Body: `{ "id"?: string /* UUID */, "texto": string }`
-- `201 Nota` created
-- `200 Nota` same `id` and `texto` already existed (safe retry)
+### `POST /api/notes`
+Body: `{ "id"?: string /* UUID */, "text": string }`
+- `201 Note` created
+- `200 Note` same `id` and `text` already existed (safe retry)
 - `400` invalid input · `409` the `id` exists with another text
 
-### `PATCH /api/notas/:id`
-Body: `{ "version": number, "texto"?: string, "borrar"?: true }` (at least one of `texto`, `borrar`)
-- `200 Nota` updated (or soft-deleted: `borradoEn` set)
-- `400` invalid input · `404` unknown or deleted · `409 { error, actual: Nota }` stale `version`
+### `PATCH /api/notes/:id`
+Body: `{ "version": number, "text"?: string, "delete"?: true }` (at least one of `text`, `delete`)
+- `200 Note` updated (or soft-deleted: `deletedAt` set)
+- `400` invalid input · `404` unknown or deleted · `409 { error, current: Note }` stale `version`
 
 ## Status codes common to every route
 
