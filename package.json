@@ -10,7 +10,8 @@
     "check": "npm run typecheck && npm test",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
-    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy"
+    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "test:e2e": "playwright test"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.9.1",
+    "@playwright/test": "^1.65.1",
     "typescript": "^7.0.2",
     "vitest": "^4.1.12",
     "wrangler": "^4.167.0"
