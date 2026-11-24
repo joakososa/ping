@@ -4,8 +4,8 @@
 - Date: 2026-11-24
 
 ## Context
-The systems must cost $0/month at personal scale, run on infrastructure Joaquín owns, be reachable from Android,
-and be easy for Claude to build and maintain. Joaquín approved TypeScript.
+The systems must cost $0/month at personal scale, run on infrastructure Joaquin owns, be reachable from Android,
+and be easy for Claude to build and maintain. Joaquin approved TypeScript.
 
 ## Decision
 - **Runtime:** Cloudflare Workers (personal account, Free plan). **Database:** D1 (SQLite), one per system.

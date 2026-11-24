@@ -1,35 +1,43 @@
 # CLAUDE.md — ping
 
-Stage-1 proof system and **template repo** for Joaquín's personal systems (Libreta, Mesa, Finanzas…): a
+Stage-1 proof system and **template repo** for Joaquin's personal systems (Libreta, Mesa, Finanzas…): a
 Cloudflare Worker with a D1 database, a private API behind Cloudflare Access, an installable PWA, an audit log,
 and (later) an MCP connector for Claude. Throwaway data only.
 
-Cross-system plan and context: Joaquín's context folder `2026 - Migraciones` (`AGENTS.md`, `docs/plan/`).
+Cross-system plan and context: Joaquin's context folder `2026 - Migraciones` (`AGENTS.md`, `docs/plan/`).
 
 ## 1. How we work (non-negotiable)
 
 **Git and PRs**
 - **Never push to `main`. Never.** Every change goes on a branch and reaches `main` only through a PR that
-  Joaquín reviews and merges. Merging to `main` deploys (Workers Builds).
+  Joaquin reviews and merges. Merging to `main` deploys (Workers Builds).
 - **Small, reviewable PRs:** one concern per PR. If a change grows past what can be reviewed in one sitting, split
   it (stacked PRs are fine: each PR says which one it builds on).
 
 **Specs → tests → code**
-1. The behavior is agreed in the chat with Joaquín.
-2. Claude writes or updates the **spec** in `docs/specs/` (numbered requirements, e.g. `NOT-07`). Joaquín approves.
+1. The behavior is agreed in the chat with Joaquin.
+2. Claude writes or updates the **spec** in `docs/specs/` (numbered requirements, e.g. `NOT-07`: an update with a
+   stale version is refused with 409). Joaquin approves.
 3. Claude writes the **tests first**, one or more per requirement, with the requirement id in the test name.
    They must fail for the right reason.
 4. Then the code, until the tests pass. `npm run check` must pass before opening the PR.
+5. Claude records the tests in `docs/tests/<spec>.md`: for each requirement, the tests that cover it (file, test
+   name, what it proves). The PR's "Tests" table is taken from there, so the spec → test trace stays versioned.
 Commits in a PR follow that order (tests commit, then implementation commit) when practical.
+
+**Mentioning ADRs and specs**
+- The first time an ADR or a spec requirement is mentioned in a text (a doc, a PR description, a message to
+  Joaquin), write its title or content too: "ADR-0005 (Optimistic concurrency with an integer `version`)",
+  "ACC-09 (every `/api` response has `Cache-Control: no-store`)". Later mentions in the same text can use the id.
 
 **Decisions (ADRs)**
 - Every important decision is an ADR in `docs/decisions/NNNN-title.md`, written by Claude from what was agreed in
-  the chat. Status starts as **Proposed**; Joaquín approves it → **Accepted (date)**.
+  the chat. Status starts as **Proposed**; Joaquin approves it → **Accepted (date)**.
 - **An accepted ADR is never edited**, except to add one line at the top: `Superseded by ADR-NNNN` (or
   `Amended by…`). Changing a decision = a new ADR.
 - Every ADR is listed in the index below (§3) with a one-line summary of what it decides.
 
-**PR description** (in Spanish, since it is for Joaquín):
+**PR description** (in Spanish, since it is for Joaquin):
 ```
 ## Qué agrega
 <the functionality, in a few lines; link the spec / ADRs it implements>
@@ -47,7 +55,7 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 ```
 
 **Other rules**
-- Talk to Joaquín in Spanish (rioplatense). Code, comments and `docs/` in English.
+- Talk to Joaquin in Spanish (rioplatense). Code, comments and `docs/` in English.
 - Never put secrets or personal data in this repo (it may be public). Emails and AUD tags are Worker secrets.
 - Keep `src/core/` generic: it is copied into every system.
 - No delete endpoints or tools (soft delete only). No tool that runs free-form SQL.
@@ -59,6 +67,7 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 | Path | What |
 | --- | --- |
 | `docs/specs/` | Behavior specs with numbered requirements; tests are derived from them |
+| `docs/tests/` | One file per spec: which tests cover each requirement and what they prove |
 | `docs/decisions/` | ADRs (see index below) |
 | `docs/api.md` | API contract |
 | `docs/db-schema.md` | Database schema and its rules |
@@ -83,10 +92,10 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 | # | PR | Status |
 | --- | --- | --- |
 | 1 | `docs/fundamentos`: this file, ADRs 0001–0009, specs, API contract, DB schema | Open |
-| 2 | `feat/acceso`: tooling + CI + Access verification (`ACC-*`) + `/api/yo` | Open (on top of 1) |
-| 3 | `feat/notas`: migration, audit log, notes API (`NOT-*`, `AUD-*`) | Open (on top of 2) |
-| 4 | `feat/pwa`: installable PWA (`PWA-*`, manual checklist) | Open (on top of 3) |
-| 5 | Setup in Cloudflare (Joaquín, steps in README) + first deploy + checklist | After 1–4 merge and joakososa.dev moves |
+| 2 | `feat/acceso`: tooling + CI + Access gate spec (`ACC-*`) + `/api/me` | Open (on top of 1) |
+| 3 | `feat/notas`: migration, audit log, notes API and audit specs (`NOT-*`, `AUD-*`) | Open (on top of 2) |
+| 4 | `feat/pwa`: installable PWA, PWA spec (`PWA-*`) | Open (on top of 3) |
+| 5 | Setup in Cloudflare (Joaquin, steps in README) + first deploy + checklist | After 1–4 merge and joakososa.dev moves |
 | 6 | `feat/mcp`: MCP connector with OAuth through Access | Spec + ADR first |
 | 7 | Mark repo as GitHub template | After 6 |
 

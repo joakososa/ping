@@ -18,4 +18,4 @@ just added). The original plan used an `actualizado` timestamp; timestamps can c
 
 ## Consequences
 - No lost updates. Clients must keep the `version` they read and handle 409.
-- Creations are not versioned (see ADR-0007).
+- Creations are not versioned (see ADR-0007, Idempotent creation with client-generated ids).

@@ -4,13 +4,13 @@
 - Date: 2026-11-24
 
 ## Context
-Each system lives at a public subdomain (`<system>.joakososa.dev`) but must be usable only by Joaquín. Access
+Each system lives at a public subdomain (`<system>.joakososa.dev`) but must be usable only by Joaquin. Access
 (Zero Trust Free) authenticates before a request reaches the Worker and adds a signed JWT
 (`Cf-Access-Jwt-Assertion`). A misconfiguration (a route outside Access, a workers.dev URL left on) would expose
 the Worker directly.
 
 ## Decision
-- An Access application per system hostname. Policy: Allow, include one email (Joaquín's). Session: 1 month.
+- An Access application per system hostname. Policy: Allow, include one email (Joaquin's). Session: 1 month.
   Login method: the Cloudflare identity provider (Cloudflare account with 2FA), the default for new organizations.
 - The Worker **verifies the JWT again** on every `/api/*` request: signature against the team's public keys
   (`https://<team>/cdn-cgi/access/certs`), issuer `https://<team>`, audience = the application's AUD tag, and the

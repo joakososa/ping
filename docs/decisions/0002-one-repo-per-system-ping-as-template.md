@@ -4,8 +4,8 @@
 - Date: 2026-11-24
 
 ## Context
-Joaquín's systems (Libreta, Mesa, Finanzas, Estudio) are unrelated to each other. Each one already gets its own
-Worker, D1 database, MCP connector and PWA. A monorepo was considered and rejected by Joaquín.
+Joaquin's systems (Libreta, Mesa, Finanzas, Estudio) are unrelated to each other. Each one already gets its own
+Worker, D1 database, MCP connector and PWA. A monorepo was considered and rejected by Joaquin.
 
 ## Decision
 - One GitHub repo per system. `respaldos` is a separate repo for nightly database exports.

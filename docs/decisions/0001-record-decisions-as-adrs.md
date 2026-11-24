@@ -4,12 +4,12 @@
 - Date: 2026-11-24
 
 ## Context
-Decisions about these systems are made in conversations between Joaquín and Claude. Conversations are not a
-durable record, and later agents (or Joaquín months from now) need to know what was decided and why.
+Decisions about these systems are made in conversations between Joaquin and Claude. Conversations are not a
+durable record, and later agents (or Joaquin months from now) need to know what was decided and why.
 
 ## Decision
 - Every important decision is written as an ADR in `docs/decisions/NNNN-short-title.md` (Context, Decision,
-  Consequences), drafted by Claude from what was agreed, approved by Joaquín.
+  Consequences), drafted by Claude from what was agreed, approved by Joaquin.
 - Status flow: `Proposed` → `Accepted (YYYY-MM-DD)`. A rejected proposal is deleted in its PR, not kept.
 - An accepted ADR is **immutable**. The only allowed edit is a line under the status: `Superseded by ADR-NNNN` or
   `Amended by ADR-NNNN`. A changed decision is a new ADR that references the old one.

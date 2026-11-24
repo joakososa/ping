@@ -1,13 +1,13 @@
 # ping
 
-Stage-1 proof system of Joaquín's personal systems, and the **template** every other system (Libreta, Mesa,
+Stage-1 proof system of Joaquin's personal systems, and the **template** every other system (Libreta, Mesa,
 Finanzas…) is created from.
 
 It proves the whole chain with throwaway data: a Cloudflare Worker with a D1 database, an installable PWA, a
 private API behind Cloudflare Access, an audit log, deploy on merge, and (next PR) an MCP connector for Claude.
 
 ```
-browser / Android PWA ──▶ Cloudflare Access (only Joaquín) ──▶ Worker "ping" ──▶ D1 "ping"
+browser / Android PWA ──▶ Cloudflare Access (only Joaquin) ──▶ Worker "ping" ──▶ D1 "ping"
                                                                  ├─ web/      static PWA (no Worker code runs)
                                                                  ├─ /api/*    JSON API, re-checks the Access JWT
                                                                  └─ /mcp      MCP connector (next PR)
@@ -40,15 +40,15 @@ npm run types        # after changing wrangler.jsonc
 `npm run dev` serves the PWA, but every `/api` call answers `500` locally because Access is not configured there.
 That is on purpose (fail closed). The tests cover the API with locally signed tokens.
 
-## Setup (once, in Joaquín's personal Cloudflare account)
+## Setup (once, in Joaquin's personal Cloudflare account)
 
 1. **D1:** database `ping` (done; its id is in `wrangler.jsonc`).
 2. **Team domain:** `joakososa.cloudflareaccess.com` (done; in `wrangler.jsonc` as `vars.TEAM_DOMAIN`).
 3. **Access application:** Zero Trust → Access → Applications → Add → Self-hosted, domain `ping.joakososa.dev`.
-   Policy: Allow, include Emails = Joaquín's email. Session duration: 1 month. Copy the **Application Audience
+   Policy: Allow, include Emails = Joaquin's email. Session duration: 1 month. Copy the **Application Audience
    (AUD) tag**.
 4. **Worker secrets** (Workers & Pages → ping → Settings → Variables and Secrets, type *Secret*):
-   `POLICY_AUD` = the AUD tag, `ALLOWED_EMAIL` = Joaquín's email. Secrets are kept across deploys.
+   `POLICY_AUD` = the AUD tag, `ALLOWED_EMAIL` = Joaquin's email. Secrets are kept across deploys.
 5. **Deploy on merge (Workers Builds):** Workers & Pages → Create → Import a repository → `joakososa/ping`.
    Build command `npm run check`, deploy command `npm run deploy`, production branch `main`.
    No Cloudflare token is stored in GitHub. If the deploy cannot apply migrations, give the build's API token

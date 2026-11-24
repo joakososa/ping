@@ -5,7 +5,9 @@
 
 ## Context
 The current artifacts update live. A single user does not need live updates, and live sync (Durable Objects,
-WebSockets) adds cost and complexity. Joaquín chose a PWA over a native app.
+WebSockets) adds cost and complexity. Claude recommended a PWA over a native app (no store, instant updates, the
+current pages are already HTML/JS); Joaquin accepted it on 2026-11-23 without being fully convinced, keeping the
+option of a native client later on the same API.
 
 ## Decision
 - The PWA loads data on open and every time it comes back to the front (`visibilitychange`, `online`).

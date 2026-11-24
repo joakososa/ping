@@ -4,7 +4,7 @@
 - Date: 2026-11-24
 
 ## Context
-The PWA must let Joaquín write a note with no signal and send it later. A request can also succeed on the server
+The PWA must let Joaquin write a note with no signal and send it later. A request can also succeed on the server
 while its response is lost, so the client retries. Server-generated ids would create duplicates on retry.
 
 ## Decision

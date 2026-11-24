@@ -1,11 +1,12 @@
 # Spec: Notes API and audit log (`NOT`, `AUD`)
 
 - Status: Proposed
-- Implements: ADR-0005, ADR-0006, ADR-0007
+- Implements: ADR-0005 (Optimistic concurrency with an integer `version`), ADR-0006 (Soft delete and audit log),
+  ADR-0007 (Idempotent creation with client-generated ids)
 - Tests: `test/notas.test.ts`
 - Contract: `docs/api.md` · Schema: `docs/db-schema.md`
 
-All requests carry a valid Access token (spec `ACC`). A "note" is `{ id, texto, creado, actualizado, version,
+All requests carry a valid Access token (see the Access gate spec, `docs/specs/access.md`). A "note" is `{ id, texto, creado, actualizado, version,
 borradoEn }`.
 
 ## Create and list

@@ -19,7 +19,7 @@ type Nota = {
 
 ## Endpoints
 
-### `GET /api/yo`
+### `GET /api/me`
 → `200 { "email": string }`
 
 ### `GET /api/notas`
