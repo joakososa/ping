@@ -1,0 +1,108 @@
+:root {
+  color-scheme: light dark;
+  --fondo: #f6f7f9;
+  --tarjeta: #ffffff;
+  --texto: #1f2a37;
+  --suave: #6b7280;
+  --borde: #e5e7eb;
+  --acento: #0369a1;
+  --aviso: #fef3c7;
+  --aviso-texto: #78350f;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #111827;
+    --tarjeta: #1f2a37;
+    --texto: #f3f4f6;
+    --suave: #9ca3af;
+    --borde: #374151;
+    --acento: #7dd3fc;
+    --aviso: #422006;
+    --aviso-texto: #fde68a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.barra {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 0.5rem;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+h1 { font-size: 1.25rem; margin: 0; }
+.quien { color: var(--suave); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+main { max-width: 40rem; margin: 0 auto; padding: 0 1rem 2rem; }
+
+.aviso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: 40rem;
+  margin: 0.5rem auto;
+  padding: 0.6rem 1rem;
+  background: var(--aviso);
+  color: var(--aviso-texto);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+.aviso[hidden] { display: none; }
+
+.nueva { display: flex; gap: 0.5rem; margin: 0.5rem 0 1rem; }
+
+textarea {
+  flex: 1;
+  font: inherit;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  background: var(--tarjeta);
+  color: var(--texto);
+  resize: vertical;
+}
+
+button {
+  font: inherit;
+  border: 1px solid var(--borde);
+  background: var(--tarjeta);
+  color: var(--acento);
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+.nueva button { background: var(--acento); color: var(--tarjeta); border-color: var(--acento); font-weight: 600; }
+button:disabled { opacity: 0.5; cursor: default; }
+
+.lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+
+.nota {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 0.6rem;
+  padding: 0.75rem 0.9rem;
+}
+.nota .texto { margin: 0 0 0.5rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.nota textarea { width: 100%; margin-bottom: 0.5rem; }
+.nota.pendiente { opacity: 0.7; }
+
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; color: var(--suave); font-size: 0.8rem; }
+.meta .acciones { margin-left: auto; display: flex; gap: 0.4rem; }
+.meta button { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
+
+.vacio { color: var(--suave); text-align: center; margin-top: 2rem; }
+.vacio[hidden] { display: none; }

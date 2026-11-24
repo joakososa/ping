@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f2a37" />
+    <title>Ping</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header class="barra">
+      <h1>Ping</h1>
+      <span id="quien" class="quien"></span>
+    </header>
+
+    <div id="aviso" class="aviso" hidden>
+      <span id="aviso-texto"></span>
+      <button id="aviso-accion" type="button" hidden></button>
+    </div>
+
+    <main>
+      <form id="nueva" class="nueva" autocomplete="off">
+        <textarea id="nueva-texto" rows="2" maxlength="2000" placeholder="Escribí una nota…" required></textarea>
+        <button type="submit">Anotar</button>
+      </form>
+
+      <p id="vacio" class="vacio" hidden>Todavía no hay notas.</p>
+      <ul id="lista" class="lista"></ul>
+    </main>
+
+    <template id="tpl-nota">
+      <li class="nota">
+        <p class="texto"></p>
+        <div class="meta">
+          <span class="fecha"></span>
+          <span class="estado"></span>
+          <span class="acciones">
+            <button type="button" class="editar">Editar</button>
+            <button type="button" class="borrar">Borrar</button>
+          </span>
+        </div>
+      </li>
+    </template>
+  </body>
+</html>
