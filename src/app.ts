@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import type { JWTVerifyGetKey } from "jose";
 import { requireAccess, type AccessBindings, type AccessIdentity } from "./core/access";
-import { actualizar, crear, listar, type Nota, type Result } from "./notas";
+import { createNote, listNotes, updateNote, type Note, type Result } from "./notes";
 
 export interface Bindings extends AccessBindings {
   DB: D1Database;
@@ -34,7 +34,7 @@ export function createApp(deps: AppDeps) {
   });
   app.use("/api/*", requireAccess<Bindings>(deps.getKeyFor));
 
-  const reply = (c: { json: (body: unknown, status?: number) => Response }, result: Result<Nota>, okStatus = 200) => {
+  const reply = (c: { json: (body: unknown, status?: number) => Response }, result: Result<Note>, okStatus = 200) => {
     if (result.ok) return c.json(result.value, result.created ? 201 : okStatus);
     switch (result.error) {
       case "invalid":
@@ -42,24 +42,24 @@ export function createApp(deps: AppDeps) {
       case "not_found":
         return c.json({ error: "Not found" }, 404);
       case "conflict":
-        return c.json({ error: "Changed since you read it", actual: result.actual }, 409);
+        return c.json({ error: "Changed since you read it", current: result.current }, 409);
     }
   };
 
   app.get("/api/me", (c) => c.json({ email: c.var.identity.email }));
 
-  app.get("/api/notas", async (c) => c.json(await listar(c.env.DB)));
+  app.get("/api/notes", async (c) => c.json(await listNotes(c.env.DB)));
 
-  app.post("/api/notas", async (c) => {
+  app.post("/api/notes", async (c) => {
     const body = await readJson(c.req.raw);
     if (!body) return c.json({ error: "Body must be a JSON object" }, 400);
-    return reply(c, await crear(c.env.DB, body, "pwa"));
+    return reply(c, await createNote(c.env.DB, body, "pwa"));
   });
 
-  app.patch("/api/notas/:id", async (c) => {
+  app.patch("/api/notes/:id", async (c) => {
     const body = await readJson(c.req.raw);
     if (!body) return c.json({ error: "Body must be a JSON object" }, 400);
-    return reply(c, await actualizar(c.env.DB, c.req.param("id"), body, "pwa"));
+    return reply(c, await updateNote(c.env.DB, c.req.param("id"), body, "pwa"));
   });
 
   app.all("/api/*", (c) => c.json({ error: "Not found" }, 404));
