@@ -24,7 +24,7 @@ export function createApp(deps: AppDeps) {
   });
   app.use("/api/*", requireAccess<Bindings>(deps.getKeyFor));
 
-  app.get("/api/yo", (c) => c.json({ email: c.var.identity.email }));
+  app.get("/api/me", (c) => c.json({ email: c.var.identity.email }));
 
   app.all("/api/*", (c) => c.json({ error: "Not found" }, 404));
 
