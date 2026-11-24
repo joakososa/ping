@@ -3,9 +3,10 @@
 // Bump VERSION whenever a shell file changes.
 
 const VERSION = "ping-shell-v1";
+// "/" and not "/index.html": the assets server redirects /index.html to /, and a redirected response cannot be
+// used to answer a navigation (the app would not open offline).
 const SHELL = [
   "/",
-  "/index.html",
   "/app.js",
   "/styles.css",
   "/manifest.webmanifest",
@@ -35,7 +36,7 @@ self.addEventListener("fetch", (event) => {
   // Navigations: network first, so an expired Access session redirects to the login page.
   // Offline: the cached shell.
   if (event.request.mode === "navigate") {
-    event.respondWith(fetch(event.request).catch(() => caches.match("/index.html")));
+    event.respondWith(fetch(event.request).catch(() => caches.match("/")));
     return;
   }
 
