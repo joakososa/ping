@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2023",
-    "lib": ["es2023"],
+    "lib": [
+      "es2023"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
     "strict": true,
@@ -9,7 +11,16 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["./worker-configuration.d.ts", "@cloudflare/vitest-plugin/types"]
+    "types": [
+      "./worker-configuration.d.ts",
+      "@cloudflare/vitest-plugin/types"
+    ]
   },
-  "include": ["src", "test", "vitest.config.ts", "worker-configuration.d.ts"]
+  "include": [
+    "src",
+    "test",
+    "vitest.config.ts",
+    "worker-configuration.d.ts",
+    "e2e/worker.ts"
+  ]
 }

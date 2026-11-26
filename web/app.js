@@ -194,6 +194,7 @@ async function sendPending() {
       return; // server problem: keep it queued
     }
     savePending(pending().filter((x) => x.id !== p.id));
+    writeLocal(CACHE_KEY, notes); // so the note shows at once on the next open (PWA-02)
   }
 }
 
