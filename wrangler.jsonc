@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ping",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+
+  // Only reachable through the custom domain, which sits behind Cloudflare Access.
+  // workers.dev and preview URLs would bypass Access, so both stay off.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "ping.joakososa.dev", "custom_domain": true }],
+
+  // The PWA. Static files are served directly; only /api/* runs the Worker.
+  "assets": {
+    "directory": "./web",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ping",
+      "database_id": "9a0fefef-30ef-4750-8af5-26747ee70772",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Not secret. POLICY_AUD and ALLOWED_EMAIL are secrets (see README).
+  "vars": {
+    "TEAM_DOMAIN": "joakososa.cloudflareaccess.com"
+  },
+
+  "observability": { "enabled": true }
+}
