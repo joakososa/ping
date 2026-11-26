@@ -58,7 +58,12 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 
 **Other rules**
 - Talk to Joaquin in Spanish (rioplatense). Code, comments and `docs/` in English.
-- Never put secrets or personal data in this repo (it may be public). Emails and AUD tags are Worker secrets.
+- Never put secrets or personal data in this repo (it is public). Emails and AUD tags are Worker secrets.
+- **Repo visibility** (decided 2026-11-26): `ping` and `libreta` are public; `mesa`, `finanzas` and `respaldos`
+  are private. Test data is always invented, never copied from real data. Public repos have GitHub secret
+  scanning and push protection on. **Before making a private repo public, review its whole git history** for
+  secrets and personal data: anything ever committed stays in the history, and a public → private switch does not
+  undo copies already made.
 - Keep `src/core/` generic: it is copied into every system.
 - No delete endpoints or tools (soft delete only). No tool that runs free-form SQL.
 - `workers_dev` and `preview_urls` stay `false`.
