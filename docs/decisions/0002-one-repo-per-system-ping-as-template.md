@@ -1,6 +1,6 @@
 # ADR-0002: One repo per system, `ping` as the template
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-24
 
 ## Context

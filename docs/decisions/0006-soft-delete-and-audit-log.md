@@ -1,6 +1,6 @@
 # ADR-0006: Soft delete and audit log
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-24
 
 ## Context
