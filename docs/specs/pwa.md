@@ -3,7 +3,8 @@
 - Status: Proposed
 - Implements: ADR-0007 (Idempotent creation with client-generated ids), ADR-0009 (PWA freshness: refresh on open
   and focus, cached shell)
-- Verification: see "Who checks what" below and `docs/tests/pwa.md`.
+- Verification: browser tests in `e2e/pwa.spec.ts` (ADR-0011, Browser tests with Playwright in CI), recorded in
+  `docs/tests/pwa.md`; two items also checked once on the phone (below).
 
 ## Requirements
 
@@ -22,9 +23,8 @@
 
 ## Who checks what
 
-- **Claude, before each PR that touches `web/`:** runs the app locally with a fake Access login and drives it with a
-  headless Chrome (PWA-02, 04, 05, 06, 07, 09, 10). The results go in `docs/tests/pwa.md` and in the PR.
-- **Joaquin, once after the first deploy** (about 10 minutes, on the phone): PWA-01 (install), PWA-03 (come back to
-  the app after adding a note elsewhere) and PWA-08 (session expiry). These need the real domain, Access and an
-  Android device.
-- Planned: move Claude's checks into automated browser tests in CI, so they run on every PR.
+- **CI, on every push:** all requirements, with Playwright against a test-only server that plays Cloudflare
+  Access (ADR-0011).
+- **Joaquin, once after the first deploy, on the phone (about 5 minutes):** what a headless browser cannot prove:
+  the real "Install app" prompt and opening from the home screen (PWA-01), and the real Access login after a
+  session expires (PWA-08).

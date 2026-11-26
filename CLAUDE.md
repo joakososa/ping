@@ -58,7 +58,12 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 
 **Other rules**
 - Talk to Joaquin in Spanish (rioplatense). Code, comments and `docs/` in English.
-- Never put secrets or personal data in this repo (it may be public). Emails and AUD tags are Worker secrets.
+- Never put secrets or personal data in this repo (it is public). Emails and AUD tags are Worker secrets.
+- **Repo visibility** (decided 2026-11-26): `ping` and `libreta` are public; `mesa`, `finanzas` and `respaldos`
+  are private. Test data is always invented, never copied from real data. Public repos have GitHub secret
+  scanning and push protection on. **Before making a private repo public, review its whole git history** for
+  secrets and personal data: anything ever committed stays in the history, and a public → private switch does not
+  undo copies already made.
 - Keep `src/core/` generic: it is copied into every system.
 - No delete endpoints or tools (soft delete only). No tool that runs free-form SQL.
 - `workers_dev` and `preview_urls` stay `false`.
@@ -89,6 +94,7 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 | [0008](docs/decisions/0008-deploy-with-workers-builds.md) | Accepted (2026-11-26) | Deploy on merge with Workers Builds; no Cloudflare token in GitHub; workers.dev and previews off |
 | [0009](docs/decisions/0009-pwa-refresh-on-focus.md) | Accepted (2026-11-26) | PWA refreshes on open/focus (not live); cached shell; offline queue for creations |
 | [0010](docs/decisions/0010-english-names.md) | Accepted (2026-11-26) | Code, API, database and docs in English; only the UI text is in Spanish |
+| [0011](docs/decisions/0011-browser-tests-with-playwright.md) | Proposed | PWA requirements tested with Playwright in CI against a test-only Worker that plays Access |
 
 ## 4. Plan
 
@@ -98,15 +104,17 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 | 2 | `feat/acceso`: tooling + CI + Access gate spec (`ACC-*`) + `/api/me` | Approved; merged into its stacked base, reaches `main` through #6 |
 | 3 | `feat/notas`: migration, audit log, notes API and audit spec (`NOTE-*`, `AUD-*`) | Approved; merged into its stacked base, reaches `main` through #6 |
 | 4 | `feat/pwa`: installable PWA, PWA spec (`PWA-*`) | Open (on top of 3) |
-| 5 | Setup in Cloudflare (Joaquin, steps in README) + first deploy + checklist | After 1–4 merge and joakososa.dev moves |
-| 6 | `feat/mcp`: MCP connector with OAuth through Access | Spec + ADR first |
-| 7 | Mark repo as GitHub template | After 6 |
+| 5 | `feat/browser-tests`: Playwright tests for the PWA spec in CI (ADR-0011) | Open (on top of 4) |
+| 6 | Setup in Cloudflare (Joaquin, steps in README) + first deploy + checklist | After 1–5 merge and joakososa.dev moves |
+| 7 | `feat/mcp`: MCP connector with OAuth through Access | Spec + ADR first |
+| 8 | Mark repo as GitHub template | After 7 |
 
 ## 5. Commands
 
 ```sh
 npm ci
 npm run check     # typecheck + tests (required before every PR)
+npm run test:e2e  # browser tests of the PWA (Playwright; PW_CHROME_PATH=<chrome> to use an installed Chrome)
 npm run types     # regenerate worker-configuration.d.ts after changing wrangler.jsonc
 npm run dev       # local server; /api answers 500 locally on purpose (Access not configured)
 ```
