@@ -1,6 +1,6 @@
 # ADR-0010: English for code, API and database; Spanish for the UI
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-24
 
 ## Context

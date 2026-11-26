@@ -79,24 +79,24 @@ Commits in a PR follow that order (tests commit, then implementation commit) whe
 
 | ADR | Status | Decides |
 | --- | --- | --- |
-| [0001](docs/decisions/0001-record-decisions-as-adrs.md) | Proposed | Decisions are recorded as ADRs; accepted ADRs are immutable except for supersede notes |
-| [0002](docs/decisions/0002-one-repo-per-system-ping-as-template.md) | Proposed | One repo per system; `ping` is the template; `src/core/` is copied, not shared as a package |
-| [0003](docs/decisions/0003-stack.md) | Proposed | Cloudflare Workers + D1, TypeScript, Hono, Vitest in the Workers runtime; plain HTML/JS PWA |
-| [0004](docs/decisions/0004-access-gate-and-jwt-recheck.md) | Proposed | Cloudflare Access gates every system; the Worker re-verifies the JWT, checks one allowed email and fails closed |
-| [0005](docs/decisions/0005-optimistic-concurrency-with-version.md) | Proposed | Writes carry the integer `version` they read; stale writes get 409, never overwrite |
-| [0006](docs/decisions/0006-soft-delete-and-audit-log.md) | Proposed | No hard deletes; every write is audited in `audit_log` in the same transaction |
-| [0007](docs/decisions/0007-idempotent-create-with-client-ids.md) | Proposed | Clients generate UUIDs, so offline retries never duplicate |
-| [0008](docs/decisions/0008-deploy-with-workers-builds.md) | Proposed | Deploy on merge with Workers Builds; no Cloudflare token in GitHub; workers.dev and previews off |
-| [0009](docs/decisions/0009-pwa-refresh-on-focus.md) | Proposed | PWA refreshes on open/focus (not live); cached shell; offline queue for creations |
-| [0010](docs/decisions/0010-english-names.md) | Proposed | Code, API, database and docs in English; only the UI text is in Spanish |
+| [0001](docs/decisions/0001-record-decisions-as-adrs.md) | Accepted (2026-11-26) | Decisions are recorded as ADRs; accepted ADRs are immutable except for supersede notes |
+| [0002](docs/decisions/0002-one-repo-per-system-ping-as-template.md) | Accepted (2026-11-26) | One repo per system; `ping` is the template; `src/core/` is copied, not shared as a package |
+| [0003](docs/decisions/0003-stack.md) | Accepted (2026-11-26) | Cloudflare Workers + D1, TypeScript, Hono, Vitest in the Workers runtime; plain HTML/JS PWA |
+| [0004](docs/decisions/0004-access-gate-and-jwt-recheck.md) | Accepted (2026-11-26) | Cloudflare Access gates every system; the Worker re-verifies the JWT, checks one allowed email and fails closed |
+| [0005](docs/decisions/0005-optimistic-concurrency-with-version.md) | Accepted (2026-11-26) | Writes carry the integer `version` they read; stale writes get 409, never overwrite |
+| [0006](docs/decisions/0006-soft-delete-and-audit-log.md) | Accepted (2026-11-26) | No hard deletes; every write is audited in `audit_log` in the same transaction |
+| [0007](docs/decisions/0007-idempotent-create-with-client-ids.md) | Accepted (2026-11-26) | Clients generate UUIDs, so offline retries never duplicate |
+| [0008](docs/decisions/0008-deploy-with-workers-builds.md) | Accepted (2026-11-26) | Deploy on merge with Workers Builds; no Cloudflare token in GitHub; workers.dev and previews off |
+| [0009](docs/decisions/0009-pwa-refresh-on-focus.md) | Accepted (2026-11-26) | PWA refreshes on open/focus (not live); cached shell; offline queue for creations |
+| [0010](docs/decisions/0010-english-names.md) | Accepted (2026-11-26) | Code, API, database and docs in English; only the UI text is in Spanish |
 
 ## 4. Plan
 
 | # | PR | Status |
 | --- | --- | --- |
-| 1 | `docs/fundamentos`: this file, ADRs 0001–0010, specs, API contract, DB schema | Open |
-| 2 | `feat/acceso`: tooling + CI + Access gate spec (`ACC-*`) + `/api/me` | Open (on top of 1) |
-| 3 | `feat/notas`: migration, audit log, notes API and audit spec (`NOTE-*`, `AUD-*`) | Open (on top of 2) |
+| 1 | `docs/fundamentos`: this file, ADRs 0001–0010, specs, API contract, DB schema | Merged 2026-11-26 |
+| 2 | `feat/acceso`: tooling + CI + Access gate spec (`ACC-*`) + `/api/me` | Approved; merged into its stacked base, reaches `main` through #6 |
+| 3 | `feat/notas`: migration, audit log, notes API and audit spec (`NOTE-*`, `AUD-*`) | Approved; merged into its stacked base, reaches `main` through #6 |
 | 4 | `feat/pwa`: installable PWA, PWA spec (`PWA-*`) | Open (on top of 3) |
 | 5 | Setup in Cloudflare (Joaquin, steps in README) + first deploy + checklist | After 1–4 merge and joakososa.dev moves |
 | 6 | `feat/mcp`: MCP connector with OAuth through Access | Spec + ADR first |

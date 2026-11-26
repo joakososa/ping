@@ -1,6 +1,6 @@
 # ADR-0008: Deploy with Workers Builds, only through merged PRs
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-24
 
 ## Context

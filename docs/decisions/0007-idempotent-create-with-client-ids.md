@@ -1,6 +1,6 @@
 # ADR-0007: Idempotent creation with client-generated ids
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-24
 
 ## Context

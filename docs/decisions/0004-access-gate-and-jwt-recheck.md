@@ -1,6 +1,6 @@
 # ADR-0004: Cloudflare Access as the gate, JWT re-checked in the Worker
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-24
 
 ## Context

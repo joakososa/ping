@@ -1,6 +1,6 @@
 # ADR-0009: PWA freshness: refresh on open and focus, cached shell
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-24
 
 ## Context
